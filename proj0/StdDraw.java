@@ -917,7 +917,17 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
             System.out.println("Invalid image file type: " + suffix);
         }
     }
-
+    public static void pause(int t) {
+        try {
+            Thread.sleep(t);
+        }
+        catch (InterruptedException e) {
+            System.out.println("Error sleeping");
+        }
+    }
+    public static void enableDoubleBuffering() {
+        defer = true;
+    }
 
     /**
      * This method cannot be called directly.

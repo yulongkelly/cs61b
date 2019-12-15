@@ -64,10 +64,10 @@ public class LinkedListDeque<Type>{
 	}
 
 	public void printDeque(){
-		int size = size();
+		NewNode p = sentinel.next;
 		for(int n = 1; n<=size; n++){
-			System.out.print(sentinel.next.item + " ");
-			sentinel.next = sentinel.next.next;
+			System.out.print(p.item + " ");
+			p = p.next;
 		}
 	}
 
@@ -75,7 +75,17 @@ public class LinkedListDeque<Type>{
 		return size;
 	}
 
-	public Type get
+	public Type get(int index){
+		NewNode p = sentinel.next;
+		for(int n = 0; n<size; n++){
+			if(n == index){
+				return p.item;
+			}
+			p = p.next;
+		}
+		return null;
+	}
+
 	public static void main(String[] args){
 		LinkedListDeque<Integer> list = new LinkedListDeque<Integer>(3);
 		list.addFirst(10);
@@ -84,5 +94,7 @@ public class LinkedListDeque<Type>{
 		list.removeFirst();
 		list.removeLast();
 		list.size();
+		list.printDeque();
+		list.get(1);
 	}
 }

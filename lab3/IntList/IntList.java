@@ -120,6 +120,24 @@ public class IntList {
 
     }
 
+    /**
+     * Returns the reverse of the given IntList.
+     * This method is destructive. If given null
+     * as an input, returns null.
+     */
+    public static IntList reverse(IntList A) {
+        if(A == null){
+            return null;
+        }
+        if(A.tail == null){
+            return A;
+        }
+
+        IntList Q = A.tail;
+        A.tail = null;
+        return dcatenate(reverse(Q), A);
+    }
+
 
     /**
      * DO NOT MODIFY ANYTHING BELOW THIS LINE! Many of the concepts below here

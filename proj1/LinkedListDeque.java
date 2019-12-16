@@ -18,6 +18,7 @@ public class LinkedListDeque<Type>{
 		sentinel = new NewNode(null, null, null);
 		sentinel.previous = sentinel;
 		sentinel.next = sentinel;
+		size = 0;
 	}
 
 	public LinkedListDeque(Type x) {
@@ -86,6 +87,18 @@ public class LinkedListDeque<Type>{
 		return null;
 	}
 
+	public void reverse(){
+      NewNode front = sentinel.next;
+      for(int i = 1; i<=size; i++){
+         NewNode next = sentinel.next.next;
+         sentinel.next.next = sentinel.next.previous;
+         sentinel.next.previous = next;
+         sentinel.next = next;
+      }
+      sentinel.next = sentinel.previous;
+      sentinel.previous = front;   
+	}
+
 	public static void main(String[] args){
 		LinkedListDeque<Integer> list = new LinkedListDeque<Integer>(3);
 		list.addFirst(10);
@@ -96,5 +109,7 @@ public class LinkedListDeque<Type>{
 		list.size();
 		list.printDeque();
 		list.get(1);
+		list.addFirst(30);
+		list.reverse();
 	}
 }

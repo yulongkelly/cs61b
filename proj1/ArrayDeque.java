@@ -115,6 +115,10 @@ public class ArrayDeque<Type>{
     public Type get(int index){
         return items[index];
     }
+
+    public void reverse() {
+        
+    }
  
     public static void main(String[] args){
         ArrayDeque<Integer> a = new ArrayDeque();

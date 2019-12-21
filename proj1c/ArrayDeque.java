@@ -52,15 +52,15 @@ public class ArrayDeque<Type> implements Deque<Type>{
         } 
     }
 
-    @Override
-    public void addLast(Type x){
-        items[nextLast] = x;
-        size = size + 1;
-        if(isFull()){
-            resize();
-        }
-        nextLast = nextLast + 1;
-    }
+    // @Override
+    // public void addLast(Type x){
+    //     items[nextLast] = x;
+    //     size = size + 1;
+    //     if(isFull()){
+    //         resize();
+    //     }
+    //     nextLast = nextLast + 1;
+    // }
 
 
     public void checkUsage(){

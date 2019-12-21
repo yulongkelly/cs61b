@@ -14,24 +14,31 @@ import java.util.List;
 public class Plip extends Creature {
 
     /** red color. */
-    private int r;
+    private int r = 99;
     /** green color. */
-    private int g;
+    private int g = 255;
     /** blue color. */
-    private int b;
+    private int b = 76;
+    /** retained energy for itself and baby*/
+    private double repEnergyRetained = 0.5;
+
+    private double moveProbability = 0.5;
+
+    private int colorShift = 5;
+
+    private double maxEnergy;
 
     /** creates plip with energy equal to E. */
     public Plip(double e) {
         super("plip");
-        r = 0;
-        g = 0;
-        b = 0;
         energy = e;
+        maxEnergy =e;
     }
 
     /** creates a plip with energy equal to 1. */
     public Plip() {
         this(1);
+        maxEnergy = 1;
     }
 
     /** Should return a color with red = 99, blue = 76, and green that varies
@@ -41,12 +48,22 @@ public class Plip extends Creature {
      *  linearly in between these two extremes. It's not absolutely vital
      *  that you get this exactly correct.
      */
+    @Override
     public Color color() {
-        g = 63;
+        if (energy == maxEnergy) {
+            g = 255;
+        } else if (energy == 0) {
+            g = 63;
+        } else {
+            g += HugLifeUtils.randomInt(-colorShift, colorShift);
+            g = Math.min(g, 255);
+            g = Math.max(g, 0);
+        }
         return color(r, g, b);
     }
 
     /** Do nothing with C, Plips are pacifists. */
+    @Override
     public void attack(Creature c) {
     }
 
@@ -54,20 +71,35 @@ public class Plip extends Creature {
      *  to avoid the magic number warning, you'll need to make a
      *  private static final variable. This is not required for this lab.
      */
+    @Override
     public void move() {
+        energy -= 0.15;
+        energy = Math.min(energy, maxEnergy);
+        energy = Math.max(energy, 0);
+        g += HugLifeUtils.randomInt(-colorShift, colorShift);
     }
 
 
     /** Plips gain 0.2 energy when staying due to photosynthesis. */
+    @Override
     public void stay() {
+        energy += 0.2;
+        energy = Math.min(energy, maxEnergy);
+        energy = Math.max(energy, 0);
+        g += HugLifeUtils.randomInt(-colorShift, colorShift);
     }
 
     /** Plips and their offspring each get 50% of the energy, with none
      *  lost to the process. Now that's efficiency! Returns a baby
      *  Plip.
      */
+    @Override
     public Plip replicate() {
-        return this;
+        energy = energy * repEnergyRetained;
+        g += HugLifeUtils.randomInt(-colorShift, colorShift);
+        double babyEnergy = energy * repEnergyRetained;
+        return new Plip(babyEnergy);
+
     }
 
     /** Plips take exactly the following actions based on NEIGHBORS:
@@ -80,7 +112,24 @@ public class Plip extends Creature {
      *  scoop on how Actions work. See SampleCreature.chooseAction()
      *  for an example to follow.
      */
+    @Override
     public Action chooseAction(Map<Direction, Occupant> neighbors) {
+        List<Direction> empties = getNeighborsOfType(neighbors, "empty");
+        List<Direction> cloruses = getNeighborsOfType(neighbors, "clorus");
+        if(empties.size() == 0) {
+            return new Action(Action.ActionType.STAY);
+        }
+        if (energy >= 1) {
+            Direction moveDir = HugLifeUtils.randomEntry(empties);
+            return new Action(Action.ActionType.REPLICATE, moveDir);
+        }
+
+        if (cloruses.size() >= 1 && empties.size() >= 1) {
+            if (HugLifeUtils.random() < moveProbability) {
+                Direction moveDir = HugLifeUtils.randomEntry(empties);
+                return new Action(Action.ActionType.MOVE, moveDir);
+            }
+        }
         return new Action(Action.ActionType.STAY);
     }
 

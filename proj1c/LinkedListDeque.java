@@ -4,8 +4,7 @@ public class LinkedListDeque<Type> implements Deque<Type>{
 		public Type item;
 		public NewNode next;
 
-		public N@Override
-	NewNode(NewNode n1, Type i, NewNode n2) {
+	public NewNode(NewNode n1, Type i, NewNode n2) {
 			previous = n1;
 			item = i;
 			next = n2;
@@ -51,7 +50,7 @@ public class LinkedListDeque<Type> implements Deque<Type>{
 	@Override
 	public Type removeFirst() {
 		if(!isEmpty()){
-			Type first = snetinel.next.item;
+			Type first = sentinel.next.item;
 			sentinel.next = sentinel.next.next;
 			sentinel.next.previous = sentinel;
 			size = size - 1;

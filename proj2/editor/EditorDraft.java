@@ -1,3 +1,5 @@
+package editor;
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.VPos;
@@ -10,13 +12,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-/**
- * A JavaFX application that displays the letter the user has typed most recently in the center of
- * the window. Pressing the up and down arrows causes the font size to increase and decrease,
- * respectively.
- */
-public class SingleLetterDisplaySimple extends Application {
-    private static final int WINDOW_WIDTH = 500;
+import java.util.LinkedList;  
+
+public class Editor extends Application {
+	private static final int WINDOW_WIDTH = 500;
     private static final int WINDOW_HEIGHT = 500;
 
     /** An EventHandler to handle keys that get pressed. */
@@ -31,6 +30,9 @@ public class SingleLetterDisplaySimple extends Application {
         /** The Text to display on the screen. */
         private Text displayText = new Text(STARTING_TEXT_POSITION_X, STARTING_TEXT_POSITION_Y, "");
         private int fontSize = STARTING_FONT_SIZE;
+
+        /** building a linked list to store the text*/
+        private LinkedList<String> texts = new LinkedList<String>();
 
         private String fontName = "Verdana";
 
@@ -49,7 +51,15 @@ public class SingleLetterDisplaySimple extends Application {
             displayText.setFont(Font.font(fontName, fontSize));
 
             // All new Nodes need to be added to the root in order to be displayed.
-            root.getChildren().add(displayText);
+             root.getChildren().add(displayText);
+        }
+
+        public void setFinalTexts(LinkedList<String> texts) {
+        	if(texts.size() != 0 && texts.size()%80 == 0) {
+        		texts.add("\n");
+        	}
+        	String result = String.join("", texts);
+        	displayText.setText(result);
         }
 
         @Override
@@ -59,13 +69,13 @@ public class SingleLetterDisplaySimple extends Application {
                 // the KEY_TYPED event, javafx handles the "Shift" key and associated
                 // capitalization.
                 String characterTyped = keyEvent.getCharacter();
-                if (characterTyped.length() > 0 && characterTyped.charAt(0) != 8) {
+                if (characterTyped.length() > 0) {
                     // Ignore control keys, which have non-zero length, as well as the backspace
                     // key, which is represented as a character of value = 8 on Windows.
-                    displayText.setText(characterTyped);
+                    texts.add(characterTyped.toLowerCase());
+                    setFinalTexts(texts);
                     keyEvent.consume();
                 }
-
                 centerText();
             } else if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED) {
                 // Arrow keys should be processed using the KEY_PRESSED event, because KEY_PRESSED
@@ -80,22 +90,27 @@ public class SingleLetterDisplaySimple extends Application {
                     fontSize = Math.max(0, fontSize - 5);
                     displayText.setFont(Font.font(fontName, fontSize));
                     centerText();
+                } else if(code == KeyCode.BACK_SPACE) {  
+                    texts.removeLast();
+                    setFinalTexts(texts);
+                    keyEvent.consume();
                 }
+
             }
         }
 
         private void centerText() {
             // Figure out the size of the current text.
-            double textHeight = displayText.getLayoutBounds().getHeight();
-            double textWidth = displayText.getLayoutBounds().getWidth();
+            // double textHeight = displayText.getLayoutBounds().getHeight();
+            // double textWidth = displayText.getLayoutBounds().getWidth();
 
-            // Calculate the position so that the text will be centered on the screen.
-            double textTop = textCenterY - textHeight / 2;
-            double textLeft = textCenterX - textWidth / 2;
+            // // Calculate the position so that the text will be centered on the screen.
+            // double textTop = textCenterY - textHeight / 2;
+            // double textLeft = textCenterX - textWidth / 2;
 
             // Re-position the text.
-            displayText.setX(textLeft);
-            displayText.setY(textTop);
+            displayText.setX(0);
+            displayText.setY(0);
 
             // Make sure the text appears in front of any other objects you might add.
             displayText.toFront();
@@ -104,7 +119,7 @@ public class SingleLetterDisplaySimple extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Create a Node that will be the parent of all things displayed on the screen.
+    	// Create a Node that will be the parent of all things displayed on the screen.
         Group root = new Group();
         // The Scene represents the window: its height and width will be the height and width
         // of the window displayed.
@@ -119,10 +134,12 @@ public class SingleLetterDisplaySimple extends Application {
         scene.setOnKeyTyped(keyEventHandler);
         scene.setOnKeyPressed(keyEventHandler);
 
-        primaryStage.setTitle("Single Letter Display Simple");
+        primaryStage.setTitle("Editor");
 
-        // This is boilerplate, necessary to setup the window where things are displayed.
         primaryStage.setScene(scene);
+
+        // Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+        // System.out.println(primaryScreenBounds.getWidth());
         primaryStage.show();
     }
 

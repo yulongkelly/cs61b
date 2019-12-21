@@ -11,7 +11,7 @@ public abstract class Occupant {
     /** Name for this type of Occupant. */
     protected final String name;
 
-    /** Creates an Occupant with name equal to N. */
+    /** Creates an Occupant with name equal to n. */
     public Occupant(String n) {
         name = n;
     }

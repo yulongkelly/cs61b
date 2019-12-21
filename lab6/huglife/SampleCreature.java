@@ -41,7 +41,7 @@ public class SampleCreature extends Creature {
      *  its energy should never decrease.
      */
     public SampleCreature(double e) {
-        super("samplecreature");
+        super("s");
         energy = e;
     }
 

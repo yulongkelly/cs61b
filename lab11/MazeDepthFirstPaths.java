@@ -42,9 +42,9 @@ public class MazeDepthFirstPaths extends MazeExplorer {
                 announce();
                 distTo[w] = distTo[v] + 1;
                 dfs(w);
-                if (targetFound) {
-                    return;
-                }                
+//                if (targetFound) {
+//                    return;
+//                }
             }
         }
     }

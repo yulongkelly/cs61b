@@ -18,35 +18,29 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 
-import java.util.LinkedList;  
+import java.util.LinkedList;   
 
-public class Editor extends Application {
+public class EditorDraft3 extends Application {
     private Rectangle textBoundingBox;
 
     private static final int WINDOW_WIDTH = 500;
     private static final int WINDOW_HEIGHT = 500;
 
     /** current position */
-    double currentPosnX = 5;
-    double currentPosnY = 5;
-    double singleTextHeight; 
+    double currentPosnX = 0;
+    double currentPosnY = 0;
 
     double textHeight;
     double textWidth;
-    LinkedList<Text> texts;
-    public Editor() {
-        texts = new LinkedList<Text>();
-    }
+    double singleTextHeight;
 
-    // public Editor() {
-    //     textBoundingBox = new Rectangle(0, 0);
-    // }
+
     /** An EventHandler to handle keys that get pressed. */
     private class KeyEventHandler implements EventHandler<KeyEvent> {
         int textCenterX;
         int textCenterY;
 
-        private static final int STARTING_FONT_SIZE = 20;
+        private static final int STARTING_FONT_SIZE = 10;
         private static final int STARTING_TEXT_POSITION_X = 250;
         private static final int STARTING_TEXT_POSITION_Y = 250;
 
@@ -55,7 +49,7 @@ public class Editor extends Application {
         private int fontSize = STARTING_FONT_SIZE;
 
         /** building a linked list to store the text*/
-        private LinkedList<String> textStr = new LinkedList<String>();
+        private LinkedList<String> texts = new LinkedList<String>();
 
         private String fontName = "Verdana";
 
@@ -78,50 +72,12 @@ public class Editor extends Application {
              root.getChildren().add(displayText);
         }
 
-        // public void setTextsLayOut(LinkedList<Text> texts, Text previous) {
-        //     if(texts.size() != 0 && texts.size()%80 == 0) {
-        //         currentPosnX = 5;
-        //         currentPosnY += previous.getLayoutBounds().getHeight();
-        //     }
-        //     for(int i = 0; i < texts.size(); i++) {
-        //         Text singleText = texts.get(i);
-        //         displayText.setText(singleText.getText());
-        //         centerText(singleText, (int) singleText.getX(), (int) singleText.getY());
-        //     }
-
-        //     // String result = String.join("", getListofStr());
-        //     // displayText.setText(result);
-        // }
-        public void setTextsLayOut(LinkedList<String> textStr, Text previous) {
+        public void setTextsLayOut(LinkedList<String> texts) {
             if(texts.size() != 0 && texts.size()%80 == 0) {
-                currentPosnX = 5;
-                currentPosnY += previous.getLayoutBounds().getHeight();
+                texts.add("\n");
             }
-            String result = String.join("", textStr);
+            String result = String.join("", texts);
             displayText.setText(result);
-        }
-
-        public LinkedList<String> getListofStr() {
-            LinkedList<String> result = new LinkedList<>();
-            for(int i = 0; i < texts.size(); i++) {
-                int j = 0;
-                while(j<result.size()) {
-                    if(texts.get(i).getY()<texts.get(j).getY()) {
-                        break;
-                    } else if(texts.get(i).getY() == texts.get(j).getY()) {
-                        if(texts.get(i).getX() < texts.get(j).getX()) {
-                            break;
-                        } else {
-                            j++;
-                        }
-                    }
-                    else {
-                        j++;
-                    }
-                }
-                result.add(j, texts.get(i).getText());
-            }
-            return result;
         }
 
         @Override
@@ -133,22 +89,18 @@ public class Editor extends Application {
                 String characterTyped = keyEvent.getCharacter();
                 if (characterTyped.length() > 0) {
                     /** add character to the current position */
-                    Text previous;
-                    if(texts.size() == 0) {
-                        previous = new Text(5, 5, characterTyped.toLowerCase());
-                        texts.add(previous);
+                    if(currentPosnX == 0) {
+                        texts.add(characterTyped.toLowerCase());
                     } else {
-                        previous = new Text(currentPosnX, currentPosnY, characterTyped.toLowerCase());
-                        texts.add(previous);
-
+                        texts.add(characterTyped.toLowerCase());
                     }
-                    currentPosnX += previous.getLayoutBounds().getWidth();
+                    Text previous = new Text(currentPosnX, currentPosnY, characterTyped.toLowerCase());
                     singleTextHeight = previous.getLayoutBounds().getHeight();
-                    // texts.add(characterTyped.toLowerCase());
-                    setTextsLayOut(getListofStr(), previous);
-                    centerText();
+                    currentPosnX += previous.getLayoutBounds().getWidth();
+                    setTextsLayOut(texts);
                     keyEvent.consume();
                 }
+                centerText();
             } else if (keyEvent.getEventType() == KeyEvent.KEY_PRESSED) {
                 // Arrow keys should be processed using the KEY_PRESSED event, because KEY_PRESSED
                 // events have a code that we can check (KEY_TYPED events don't have an associated
@@ -156,50 +108,32 @@ public class Editor extends Application {
                 KeyCode code = keyEvent.getCode();
                 if (code == KeyCode.UP) {
                     fontSize += 5;
-                    // resizeFont();
-                    // centerText();
+                    displayText.setFont(Font.font(fontName, fontSize));
+                    centerText();
                 } else if (code == KeyCode.DOWN) {
                     fontSize = Math.max(0, fontSize - 5);
-                    // resizeFont();
-                    // centerText();
+                    displayText.setFont(Font.font(fontName, fontSize));
+                    centerText();
                 } else if(code == KeyCode.BACK_SPACE) {  
-                    Text previous = texts.removeLast();
-                    // setTextsLayOut(texts, previous);
+                    texts.removeLast();
+                    setTextsLayOut(texts);
                     keyEvent.consume();
                 }
 
             }
-            double cursorTop = currentPosnY + textHeight / 4;
             textBoundingBox.setX(currentPosnX);
-            textBoundingBox.setY(cursorTop);
+            textBoundingBox.setY(currentPosnY);
         }
-        // private void centerText(Text singleText, int x, int y) {
-        //     // Figure out the size of the current text.
-        //     // singleTextHeight = displayText.getLayoutBounds().getHeight();
-        //     // singleTextWidth = displayText.getLayoutBounds().getWidth();
 
-        //     // // Calculate the position so that the text will be centered on the screen.
-        //     // double textTop = textCenterY - textHeight / 2;
-        //     // // double textLeft = textCenterX - textWidth / 2;
-        //     textHeight = displayText.getLayoutBounds().getHeight();
-
-        //     // Re-position the text.
-        //     singleText.setX(x);
-        //     singleText.setY(y);
-
-        //     // Make sure the text appears in front of any other objects you might add.
-        //     singleText.toFront();
-        // }
-
-    private void centerText() {
+        private void centerText() {
             // Figure out the size of the current text.
-            textHeight = displayText.getLayoutBounds().getHeight();
+            // double textHeight = displayText.getLayoutBounds().getHeight();
             // double textWidth = displayText.getLayoutBounds().getWidth();
 
             // // Calculate the position so that the text will be centered on the screen.
             // double textTop = textCenterY - textHeight / 2;
             // double textLeft = textCenterX - textWidth / 2;
-            textWidth = displayText.getLayoutBounds().getWidth();
+            textHeight = displayText.getLayoutBounds().getHeight();
 
             // Re-position the text.
             displayText.setX(5);
@@ -209,7 +143,6 @@ public class Editor extends Application {
             displayText.toFront();
         }
     }
-
 
     /** An event handler that displays the current position of the mouse whenever it is clicked. */
     private class MouseClickEventHandler implements EventHandler<MouseEvent> {
@@ -239,30 +172,19 @@ public class Editor extends Application {
             double mousePressedX = mouseEvent.getX();
             double mousePressedY = mouseEvent.getY();
 
-            /** find the nearest test posn from cursor */
-            double finalDiff = Math.abs(mousePressedX - texts.get(0).getX())
-                                + Math.abs(mousePressedY - texts.get(0).getY());
-            currentPosnX = texts.get(0).getX();
-            currentPosnY = texts.get(0).getY();
-            for(int i = 1; i < texts.size(); i++) {
-                double diff = Math.abs(mousePressedX - texts.get(i).getX())
-                                + Math.abs(mousePressedY - texts.get(i).getY());
-                if(finalDiff > diff) {
-                    finalDiff = diff;
-                    currentPosnX = texts.get(i).getX();
-                    currentPosnY = texts.get(i).getY();
-                }
+            double cursorTop = mousePressedX - textHeight / 2;
+            if(mousePressedX <= textWidth || mousePressedY <= textHeight) {
+                 currentPosnX = mousePressedX;
+                currentPosnY = mousePressedY;
             }
-
-            double cursorTop = currentPosnY + textHeight / 4;
 
             // Re-size and re-position the bounding box.
             textBoundingBox.setHeight(singleTextHeight);
             textBoundingBox.setWidth(1);
 
             // For rectangles, the position is the upper left hand corner.
-            textBoundingBox.setX(currentPosnX+);
-            textBoundingBox.setY(cursorTop);
+            textBoundingBox.setX(currentPosnX);
+            textBoundingBox.setY(currentPosnY);
         }
     }
 
@@ -321,9 +243,6 @@ public class Editor extends Application {
         EventHandler<MouseEvent> mouseEventHandler =
                 new MouseClickEventHandler(root);
         scene.setOnMouseClicked(mouseEventHandler);
-
-        // root.getChildren().add(textBoundingBox);
-        // makeRectangleColorChange();
 
         primaryStage.setTitle("Editor");
 

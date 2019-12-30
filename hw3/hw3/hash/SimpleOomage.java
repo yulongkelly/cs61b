@@ -10,23 +10,45 @@ public class SimpleOomage implements Oomage {
     protected int blue;
 
     private static final double WIDTH = 0.01;
-    private static final boolean USE_PERFECT_HASH = false;
+    private static final boolean USE_PERFECT_HASH = true;
+    private int redFactor = 5;
+    private int greenFactor = 10;
+    private int blueFactor = 15;
 
-    /*
+    
     @Override
     public boolean equals(Object o) {
-        // TODO: Uncomment this method and make it correct.
-    }*/
+        if(o == this) {
+            return true;
+        }
+        if(o == null) {
+            return false;
+        }
+        if(o.getClass() != this.getClass()) {
+            return false;
+        }
+        if(red==((SimpleOomage) o).red && green==((SimpleOomage) o).green && blue==((SimpleOomage) o).blue) {
+            return true;
+        }
+        return false;
+    }
 
-    /*@Override
+    @Override
     public int hashCode() {
         if (!USE_PERFECT_HASH) {
             return red + green + blue;
         } else {
             // TODO: Replace with a "perfect" hashing function.
-            return 0;
+            int hashCode = red*redFactor +green*greenFactor + blue*blueFactor;
+            while(hashCode == red+green+blue) {
+                redFactor ++;
+                greenFactor ++;
+                blueFactor ++;
+                hashCode = red*redFactor +green*greenFactor + blue*blueFactor;
+            }
+            return hashCode;
         }
-    }*/
+    }
 
     public SimpleOomage(int r, int g, int b) {
         if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {

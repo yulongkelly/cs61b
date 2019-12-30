@@ -8,11 +8,28 @@ import java.util.ArrayList;
 public class ArrayHeap<T> {
 	private ArrayList<Node> contents = new ArrayList<Node>();
 
+	public ArrayHeap() {
+		Node zeroNode = new Node(null, Double.NEGATIVE_INFINITY);   // not to bother about 0th entry
+		contents.add(0, zeroNode);
+//        this.contents.add(zeroNode);
+	}
 	/**
 	 * Inserts an item with the given priority value. This is enqueue, or offer.
 	 */
 	public void insert(T item, double priority) {
-
+		Node newNode = new Node(item, priority);
+		if(contents == null) {
+			// add newNode in the index1
+			contents.add(newNode);
+		}
+		//put the newNode into the left-most open spot
+		contents.add(newNode);
+		// bubble up
+		int index = contents.indexOf(newNode);
+		while(contents.get(index/2).myPriority > priority) {
+			bubbleUp(index);
+			index = index/2;
+		}
 	}
 
 	/**
@@ -20,8 +37,7 @@ public class ArrayHeap<T> {
 	 * from the heap.
 	 */
 	public Node peek() {
-		// TODO Complete this method!
-		return null;
+		return contents.get(0);
 	}
 
 	/**
@@ -29,8 +45,18 @@ public class ArrayHeap<T> {
 	 * the heap. This is dequeue, or poll.
 	 */
 	public Node removeMin() {
-		// TODO Complete this method!
-		return null;
+		if(contents == null){
+			return null;
+		}
+		Node smallestNode = contents.get(1);
+		int size = contents.size();
+		Node leftMost = contents.get(size-1);
+		swap(1, size-1);
+		//remove the smallest
+		contents.remove(size-1);
+		// place the current root to the right place
+		bubbleDown(1);
+		return(smallestNode);
 	}
 
 	/**
@@ -39,7 +65,7 @@ public class ArrayHeap<T> {
 	 * nodes with the same item. Check for item equality with .equals(), not ==
 	 */
 	public void changePriority(T item, double priority) {
-		// TODO Complete this method!
+
 	}
 
 	/**
@@ -140,14 +166,21 @@ public class ArrayHeap<T> {
 	 * Bubbles up the node currently at the given index.
 	 */
 	private void bubbleUp(int index) {
-		// TODO Complete this method!
+		swap(index, index/2);
 	}
 
 	/**
 	 * Bubbles down the node currently at the given index.
 	 */
-	private void bubbleDown(int inex) {
-		// TODO Complete this method!
+	private void bubbleDown(int index) {
+		if(2*index <=(contents.size()-1) && contents.get(index) != null&&contents.get(index).priority() > contents.get(2*index).priority()) {
+			swap(index, 2*index);
+			bubbleDown(2*index);
+		}
+		else if(2*index+1 <=(contents.size()-1) && contents.get(index) != null&&contents.get(index).priority() > contents.get(2*index +1).priority()) {
+			swap(index, 2*index+1);
+			bubbleDown(2*index+1);
+		}
 	}
 
 	/**

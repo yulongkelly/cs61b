@@ -31,6 +31,7 @@ public class HashTableVisualizer {
          */
 
         /* When done with visualizer, be sure to try 
-           scale = 0.5, N = 2000, M = 100. */           
+           scale = 0.5, N = 2000, M = 100. */ 
+                  
     }
 } 
